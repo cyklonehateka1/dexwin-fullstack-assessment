@@ -178,23 +178,6 @@ body {
   align-items: center;
 }
 
-.status-picker {
-  display: inline-flex;
-  align-items: center;
-}
-
-.status-select {
-  border: 1px solid #d1d5db;
-  border-radius: 999px;
-  padding: 5px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  background: #fff;
-  color: #374151;
-}
-
 .status-badge {
   font-size: 11px;
   font-weight: 600;
@@ -285,6 +268,11 @@ body {
   background: #4f46e5;
   border-color: #4f46e5;
   color: #fff;
+}
+
+.toggle-btn:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .empty-state {

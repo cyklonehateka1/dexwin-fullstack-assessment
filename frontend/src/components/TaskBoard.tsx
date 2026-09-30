@@ -4,6 +4,7 @@ import TaskItem from './TaskItem';
 
 export default function TaskBoard({ projectId }) {
   const [tasks, setTasks] = useState([]);
+  const [updatingTaskIds, setUpdatingTaskIds] = useState([]);
 
   const refreshTasks = async () => {
     const data = await getTasks(projectId);
@@ -16,7 +17,16 @@ export default function TaskBoard({ projectId }) {
   }, [projectId]);
 
   const handleStatusChange = async (task, nextStatus) => {
-    const previousStatus = task.status;
+    const previousStatus = task.status || 'TODO';
+    const allowedNextStatus = {
+      TODO: 'IN_PROGRESS',
+      IN_PROGRESS: 'DONE',
+      DONE: 'TODO',
+    };
+
+    if (allowedNextStatus[previousStatus] !== nextStatus) return;
+
+    setUpdatingTaskIds((current) => [...current, task.id]);
 
     setTasks((currentTasks) =>
       currentTasks.map((item) =>
@@ -33,6 +43,8 @@ export default function TaskBoard({ projectId }) {
         ),
       );
       console.error('Failed to update task status:', error);
+    } finally {
+      setUpdatingTaskIds((current) => current.filter((id) => id !== task.id));
     }
   };
 
@@ -47,6 +59,7 @@ export default function TaskBoard({ projectId }) {
           <TaskItem
             key={task.id ?? index}
             task={task}
+            isUpdating={updatingTaskIds.includes(task.id)}
             onStatusChange={handleStatusChange}
           />
         ))}

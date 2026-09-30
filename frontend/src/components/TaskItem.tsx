@@ -10,33 +10,24 @@ const STATUS_OPTIONS = [
   { value: 'DONE', label: 'Done' },
 ];
 
-export default function TaskItem({ task, onStatusChange }) {
+export default function TaskItem({ task, isUpdating, onStatusChange }) {
   const status = task.status || 'TODO';
   const done = status === 'DONE';
   const priority = PRIORITY[task.priority];
   const title = task.title || task.name || 'Untitled task';
   const assigneeName = task.assignee?.username || null;
-  const statusLabel = STATUS_OPTIONS.find((option) => option.value === status)?.label || 'To do';
+  const statusIndex = STATUS_OPTIONS.findIndex((option) => option.value === status);
+  const statusOption = STATUS_OPTIONS[statusIndex] || STATUS_OPTIONS[0];
+  const nextStatus = STATUS_OPTIONS[(statusIndex + 1) % STATUS_OPTIONS.length].value;
 
   return (
     <div className={'task-card' + (done ? ' done' : '')}>
       <div className="task-main">
         <span className="task-title">{title}</span>
         <div className="task-meta">
-          <label className="status-picker">
-            <span className="sr-only">Task status</span>
-            <select
-              value={status}
-              onChange={(event) => onStatusChange(task, event.target.value)}
-              className={'status-select status-' + status.toLowerCase()}
-            >
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <span className={'status-badge status-' + status.toLowerCase()}>
+            {statusOption.label}
+          </span>
           {task.priority != null && (
             <span className={'priority-pill' + (priority ? ' priority-' + priority.cls : '')}>
               {priority ? priority.label : 'P' + task.priority}
@@ -47,9 +38,18 @@ export default function TaskItem({ task, onStatusChange }) {
           ) : (
             <span className="assignee-chip unassigned">Unassigned</span>
           )}
-          <span className={'status-badge status-' + status.toLowerCase()}>{statusLabel}</span>
         </div>
       </div>
+      <button
+        type="button"
+        className="toggle-btn"
+        disabled={isUpdating}
+        aria-busy={isUpdating}
+        aria-label={`Task status: ${statusOption.label}. Click to change status.`}
+        onClick={() => onStatusChange(task, nextStatus)}
+      >
+        {isUpdating ? 'Saving...' : statusOption.label}
+      </button>
     </div>
   );
 }

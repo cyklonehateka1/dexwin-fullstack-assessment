@@ -39,8 +39,8 @@
 - Impact: Users could not correctly represent in-progress work.
 - Priority: High
 - Proposed solution: Expose a status control that supports `TODO`, `IN_PROGRESS`, and `DONE` directly.
-- Verification: The task card now uses a dropdown selector for all three valid statuses and sends the selected enum back to the API.
-- Implementation notes: The UI matches the backend model instead of silently restricting valid workflows.
+- Verification: The status button cycles through all three valid statuses in order, and the update handler rejects any transition that skips a workflow step.
+- Implementation notes: TODO must advance to IN_PROGRESS before it can become DONE; the button remains right-aligned with its existing styling.
 
 ## Finding: Unassigned tasks were rendered as empty metadata
 
