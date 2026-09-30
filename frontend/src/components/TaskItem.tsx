@@ -4,30 +4,52 @@ const PRIORITY = {
   3: { label: 'Low', cls: 'low' },
 };
 
-export default function TaskItem({ task, onToggle }) {
-  const done = task.status === 'DONE';
-  const statusLabel = (task.status || '').replace('_', ' ').toLowerCase();
+const STATUS_OPTIONS = [
+  { value: 'TODO', label: 'To do' },
+  { value: 'IN_PROGRESS', label: 'In progress' },
+  { value: 'DONE', label: 'Done' },
+];
+
+export default function TaskItem({ task, onStatusChange }) {
+  const status = task.status || 'TODO';
+  const done = status === 'DONE';
   const priority = PRIORITY[task.priority];
+  const title = task.title || task.name || 'Untitled task';
+  const assigneeName = task.assignee?.username || null;
+  const statusLabel = STATUS_OPTIONS.find((option) => option.value === status)?.label || 'To do';
 
   return (
     <div className={'task-card' + (done ? ' done' : '')}>
       <div className="task-main">
-        <span className="task-title">{task.name}</span>
+        <span className="task-title">{title}</span>
         <div className="task-meta">
-          <span className={'status-badge status-' + (task.status || '').toLowerCase()}>
-            {statusLabel}
-          </span>
+          <label className="status-picker">
+            <span className="sr-only">Task status</span>
+            <select
+              value={status}
+              onChange={(event) => onStatusChange(task, event.target.value)}
+              className={'status-select status-' + status.toLowerCase()}
+            >
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
           {task.priority != null && (
             <span className={'priority-pill' + (priority ? ' priority-' + priority.cls : '')}>
               {priority ? priority.label : 'P' + task.priority}
             </span>
           )}
-          {task.assignee && <span className="assignee-chip">{task.assignee.username}</span>}
+          {assigneeName ? (
+            <span className="assignee-chip">{assigneeName}</span>
+          ) : (
+            <span className="assignee-chip unassigned">Unassigned</span>
+          )}
+          <span className={'status-badge status-' + status.toLowerCase()}>{statusLabel}</span>
         </div>
       </div>
-      <button className="toggle-btn" onClick={() => onToggle(task)}>
-        {done ? 'Reopen' : 'Complete'}
-      </button>
     </div>
   );
 }

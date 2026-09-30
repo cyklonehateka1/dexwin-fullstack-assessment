@@ -178,6 +178,23 @@ body {
   align-items: center;
 }
 
+.status-picker {
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-select {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: #fff;
+  color: #374151;
+}
+
 .status-badge {
   font-size: 11px;
   font-weight: 600;
@@ -200,6 +217,18 @@ body {
 .status-done {
   background: #dcfce7;
   color: #166534;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .priority-pill {
@@ -232,6 +261,11 @@ body {
   background: #eef2ff;
   border-radius: 999px;
   padding: 3px 9px;
+}
+
+.assignee-chip.unassigned {
+  color: #6b7280;
+  background: #f3f4f6;
 }
 
 .toggle-btn {

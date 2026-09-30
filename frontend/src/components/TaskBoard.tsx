@@ -5,17 +5,35 @@ import TaskItem from './TaskItem';
 export default function TaskBoard({ projectId }) {
   const [tasks, setTasks] = useState([]);
 
-  useEffect(() => {
-    getTasks(projectId).then((data) => {
-      setTasks(data);
-    });
-  }, []);
+  const refreshTasks = async () => {
+    const data = await getTasks(projectId);
+    setTasks(Array.isArray(data) ? data : []);
+  };
 
-  const handleToggle = (task) => {
-    const next = task.status === 'DONE' ? 'TODO' : 'DONE';
-    task.status = next;
-    setTasks(tasks);
-    updateTaskStatus(task.id, next);
+  useEffect(() => {
+    if (!projectId) return;
+    refreshTasks();
+  }, [projectId]);
+
+  const handleStatusChange = async (task, nextStatus) => {
+    const previousStatus = task.status;
+
+    setTasks((currentTasks) =>
+      currentTasks.map((item) =>
+        item.id === task.id ? { ...item, status: nextStatus } : item,
+      ),
+    );
+
+    try {
+      await updateTaskStatus(task.id, nextStatus);
+    } catch (error) {
+      setTasks((currentTasks) =>
+        currentTasks.map((item) =>
+          item.id === task.id ? { ...item, status: previousStatus } : item,
+        ),
+      );
+      console.error('Failed to update task status:', error);
+    }
   };
 
   return (
@@ -26,7 +44,11 @@ export default function TaskBoard({ projectId }) {
       </div>
       <div className="task-list">
         {tasks.map((task, index) => (
-          <TaskItem key={index} task={task} onToggle={handleToggle} />
+          <TaskItem
+            key={task.id ?? index}
+            task={task}
+            onStatusChange={handleStatusChange}
+          />
         ))}
       </div>
     </div>
